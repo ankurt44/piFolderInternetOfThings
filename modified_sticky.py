@@ -28,35 +28,36 @@ DOWN_PIXELS = [[3, 7], [4, 7]]
 LEFT_PIXELS = [[0, 3], [0, 4]]
 RIGHT_PIXELS = [[7, 3], [7, 4]]
 CENTRE_PIXELS = [[3, 3], [4, 3], [3, 4], [4, 4]]
-
+PIXELS = [[0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3]]#,[2,0],[2,1],[2,2],[2,3]]
 
 def set_pixels(pixels, col):
     for p in pixels:
         sense.set_pixel(p[0], p[1], col[0], col[1], col[2])
 
 
-def handle_code(code, colour):
+def handle_code(code, colour):	
+    fp = open('parkingSpotStatus.csv','w')
     if code == ecodes.KEY_DOWN:
-        set_pixels(DOWN_PIXELS, colour)
+	print 'free'
+	fp.write('FREE')
+	sense.show_message('FREE',text_colour=RED,back_colour=GREEN)
     elif code == ecodes.KEY_UP:
-        set_pixels(UP_PIXELS, colour)
-    elif code == ecodes.KEY_LEFT:
-        set_pixels(LEFT_PIXELS, colour)
-    elif code == ecodes.KEY_RIGHT:
-        set_pixels(RIGHT_PIXELS, colour)
-    elif code == ecodes.KEY_ENTER:
-        set_pixels(CENTRE_PIXELS, colour)
-
+	print 'occupied'
+	fp.write('OCCUPIED')
+	sense.show_message('OCCUPIED',text_colour=GREEN,back_colour=RED)
+    fp.close()
 
 BLACK = [0, 0, 0]
 WHITE = [255, 255, 255]
+RED = [255, 0, 0]
+BLUE = [0, 0, 255]
+GREEN = [0, 255, 0]
 
 try:
+    sense.show_message("",back_colour=[0,255,0])
     for event in dev.read_loop():
         if event.type == ecodes.EV_KEY:
-            if event.value == 1:  # key down
-                handle_code(event.code, WHITE)
-            if event.value == 0:  # key up
-                handle_code(event.code, BLACK)
+		#write code to check if its not FREE.. then dont check for UP and DOWN joystick
+        	handle_code(event.code, WHITE)
 except KeyboardInterrupt:
     sys.exit()
